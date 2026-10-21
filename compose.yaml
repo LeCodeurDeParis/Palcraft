@@ -1,0 +1,20 @@
+services:
+    pgsql:
+        image: postgres:18-alpine
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_DB_PORT:-5432}:5432'
+        environment:
+            POSTGRES_DB: '${DB_DATABASE:-palcraft}'
+            POSTGRES_USER: '${DB_USERNAME:-palcraft}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - pgsql-data:/var/lib/postgresql
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    pgsql-data:
